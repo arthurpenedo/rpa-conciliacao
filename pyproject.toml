@@ -1,0 +1,26 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "rpa-conciliacao"
+version = "0.1.0"
+description = "Robô de conciliação (RPA em Python): cruza extrato bancário com pedidos, separa o que bateu do que precisa de revisão humana, com log, pasta de entrada e relatório HTML"
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "MIT" }
+authors = [{ name = "Arthur Penedo" }]
+dependencies = []
+
+[project.optional-dependencies]
+dev = ["pytest>=8", "ruff>=0.6"]
+
+[project.scripts]
+rpa-conciliacao = "rpa_conciliacao.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]
