@@ -10,6 +10,7 @@ from datetime import datetime
 from pathlib import Path
 
 from .conciliar import conciliar, resumo
+from .ofx import ler_ofx
 from .relatorio import gerar_html
 
 CAMPOS = ("id", "data", "descricao", "valor")
@@ -50,7 +51,7 @@ def log(pasta: Path, evento: str, **dados) -> None:
 
 def processar_par(extrato_csv: Path, pedidos_csv: Path, saida: Path) -> dict:
     """Concilia um par de arquivos e grava CSVs por status + relatório HTML."""
-    extrato = ler_csv(extrato_csv, CAMPOS)
+    extrato = ler_ofx(extrato_csv) if extrato_csv.suffix.lower() == ".ofx" else ler_csv(extrato_csv, CAMPOS)
     pedidos = ler_csv(pedidos_csv, ("id", "cliente", "valor", "data"))
     res = conciliar(pedidos, extrato)
     sumario = resumo(res, pedidos)
@@ -72,8 +73,9 @@ def rodar_uma_vez(entrada: Path, saida: Path, tentativas: int = 2) -> list[dict]
     e o robô segue com os demais (um arquivo ruim não derruba o lote).
     """
     resultados = []
-    for extrato in sorted(entrada.glob("*.extrato.csv")):
-        nome = extrato.name.removesuffix(".extrato.csv")
+    extratos = [*entrada.glob("*.extrato.csv"), *entrada.glob("*.extrato.ofx")]
+    for extrato in sorted(extratos):
+        nome = extrato.name.removesuffix(".extrato.csv").removesuffix(".extrato.ofx")
         pedidos = entrada / f"{nome}.pedidos.csv"
         if not pedidos.exists():
             log(saida, "aguardando", lote=nome, motivo="falta o arquivo de pedidos")

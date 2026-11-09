@@ -35,10 +35,10 @@ Sem dependências além da biblioteca padrão. Dados 100% fictícios.
 | 200 pedidos, semente 2 | 100% (155) | 98,7% |
 
 Precisão = dos conciliados, quantos casaram com o pedido certo. Cobertura = dos lançamentos que tinham pedido,
-quantos o robô conciliou. 21 testes passando.
+quantos o robô conciliou. 27 testes passando.
 
 ## Limites honestos
 Os dados são sintéticos e feitos junto com as regras: em extrato real o texto das descrições varia mais.
-Por isso a regra é conservadora (na dúvida, revisar). Não lê PDF/OFX, só CSV; não acessa banco.
+Por isso a regra é conservadora (na dúvida, revisar). Lê extrato em CSV e OFX (`<lote>.extrato.ofx`, versões 1.x e 2.x); não lê PDF nem acessa banco.
 
 MIT.
