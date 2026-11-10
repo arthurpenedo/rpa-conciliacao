@@ -26,9 +26,9 @@ def _nome_na_descricao(cliente: str, descricao: str) -> float:
     partes_d = d.split()
     if not partes_d:
         return 0.0
-    if len(partes_d) >= 2 and len(partes_d[-1]) == 1 and partes_c:  # "ANA S" = Ana Souza
-        if partes_c[0] == partes_d[0] and partes_c[-1].startswith(partes_d[-1]):
-            return 1.0
+    inicial_so = len(partes_d) >= 2 and len(partes_d[-1]) == 1 and partes_c  # "ANA S" = Ana Souza
+    if inicial_so and partes_c[0] == partes_d[0] and partes_c[-1].startswith(partes_d[-1]):
+        return 1.0
     return SequenceMatcher(None, normalizar(cliente), d).ratio()
 
 

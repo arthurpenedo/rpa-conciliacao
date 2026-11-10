@@ -32,7 +32,7 @@ def test_arquivo_ruim_vai_para_erros_e_o_lote_segue(tmp_path):
     res = robo.rodar_uma_vez(ent, sai)
     assert [x["lote"] for x in res] == ["outubro"]
     assert (sai / "erros" / "ruim.extrato.csv").exists()
-    erro = [e for e in log_eventos(sai) if e["evento"] == "erro"][0]
+    erro = next(e for e in log_eventos(sai) if e["evento"] == "erro")
     assert "linha 2" in erro["motivo"]
 
 
