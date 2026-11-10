@@ -105,3 +105,22 @@ def arquivar(extrato: Path, pedidos: Path, pasta: Path) -> None:
     pasta.mkdir(parents=True, exist_ok=True)
     for arq in (extrato, pedidos):
         shutil.move(str(arq), str(pasta / arq.name))
+
+
+def vigiar(entrada: Path, saida: Path, intervalo: float = 5.0, max_ciclos: int | None = None, dormir=time.sleep) -> int:
+    """Roda `rodar_uma_vez` em ciclos, como um robô de verdade: chegou arquivo novo, processa.
+
+    `max_ciclos=None` roda até Ctrl+C. Devolve quantos lotes foram processados no total.
+    """
+    total, ciclo = 0, 0
+    log(saida, "vigia_inicio", intervalo=intervalo)
+    try:
+        while max_ciclos is None or ciclo < max_ciclos:
+            total += len(rodar_uma_vez(entrada, saida))
+            ciclo += 1
+            if max_ciclos is None or ciclo < max_ciclos:
+                dormir(intervalo)
+    except KeyboardInterrupt:
+        pass
+    log(saida, "vigia_fim", ciclos=ciclo, lotes=total)
+    return total

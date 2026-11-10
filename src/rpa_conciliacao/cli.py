@@ -9,7 +9,7 @@ from pathlib import Path
 from .conciliar import conciliar, precisao
 from .gerar import gerar
 from .ofx import escrever_ofx
-from .robo import escrever_csv, rodar_uma_vez
+from .robo import escrever_csv, rodar_uma_vez, vigiar
 
 
 def medir(n: int = 60, seed: int = 7) -> dict:
@@ -27,6 +27,8 @@ def main(argv: list[str] | None = None) -> int:
     r = sub.add_parser("robo", help="processa os pares da pasta de entrada")
     r.add_argument("--entrada", default="entrada")
     r.add_argument("--saida", default="saida")
+    r.add_argument("--vigiar", type=float, metavar="SEGUNDOS", help="fica rodando e confere a pasta a cada N segundos")
+    r.add_argument("--ciclos", type=int, help="com --vigiar: para depois de N conferências (padrão: até Ctrl+C)")
     sub.add_parser("medir", help="precisão e cobertura no lote sintético com gabarito")
     a = ap.parse_args(argv)
 
@@ -40,6 +42,10 @@ def main(argv: list[str] | None = None) -> int:
             escrever_csv(pasta / "outubro.extrato.csv", extrato, ("id", "data", "descricao", "valor"))
         print(f"Lote fictício gravado em {pasta}/ ({len(pedidos)} pedidos, {len(extrato)} lançamentos).")
     elif a.cmd == "robo":
+        if a.vigiar:
+            n = vigiar(Path(a.entrada), Path(a.saida), a.vigiar, a.ciclos)
+            print(f"Vigia encerrado: {n} lote(s) processado(s).")
+            return 0
         res = rodar_uma_vez(Path(a.entrada), Path(a.saida))
         for x in res:
             print(f"{x['lote']}: {x['conciliado']} conciliados, {x['revisar']} a revisar, {x['sem_pedido']} sem pedido")

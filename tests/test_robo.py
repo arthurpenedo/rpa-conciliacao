@@ -96,3 +96,27 @@ def test_demo_em_ofx_gera_o_mesmo_resultado_do_csv(tmp_path):
     res_csv = robo.rodar_uma_vez(csv_, tmp_path / "s1")
     res_ofx = robo.rodar_uma_vez(ofx_, tmp_path / "s2")
     assert res_csv == res_ofx
+
+
+def test_vigiar_processa_arquivo_que_chega_no_meio(tmp_path):
+    ent, sai = tmp_path / "ent", tmp_path / "sai"
+    ent.mkdir()
+    esperas = []
+
+    def dormir(seg):  # simula a chegada de um lote enquanto o robô espera
+        esperas.append(seg)
+        if len(esperas) == 1:
+            main(["demo", "--entrada", str(ent), "--n", "8"])
+
+    total = robo.vigiar(ent, sai, intervalo=3, max_ciclos=3, dormir=dormir)
+    assert total == 1
+    assert esperas == [3, 3]  # não dorme depois do último ciclo
+    eventos = [e["evento"] for e in log_eventos(sai)]
+    assert eventos[0] == "vigia_inicio" and eventos[-1] == "vigia_fim"
+
+
+def test_cli_vigiar_com_ciclos(tmp_path, capsys):
+    ent = tmp_path / "ent"
+    main(["demo", "--entrada", str(ent), "--n", "5"])
+    assert main(["robo", "--entrada", str(ent), "--saida", str(tmp_path / "s"), "--vigiar", "0.01", "--ciclos", "2"]) == 0
+    assert "1 lote(s)" in capsys.readouterr().out
