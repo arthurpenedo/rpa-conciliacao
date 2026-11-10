@@ -20,7 +20,7 @@ estágio coletadas pelo [radar-skills-br](https://arthurpenedo.github.io/radar-s
 ## Como rodar
 ```bash
 pip install -e ".[dev]"
-rpa-conciliacao demo     # gera um lote fictício em entrada/
+rpa-conciliacao demo     # gera um lote fictício em entrada/ (use --formato ofx para extrato em OFX)
 rpa-conciliacao robo     # processa e grava em saida/
 rpa-conciliacao medir    # precisão e cobertura com gabarito
 pytest -q

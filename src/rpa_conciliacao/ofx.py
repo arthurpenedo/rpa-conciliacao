@@ -38,3 +38,23 @@ def ler_ofx(caminho: Path) -> list[dict]:
         descricao = _campo(bloco, "MEMO") or _campo(bloco, "NAME") or ""
         linhas.append({"id": fitid, "data": dia, "descricao": descricao, "valor": numero})
     return linhas
+
+
+def escrever_ofx(caminho: Path, extrato: list[dict]) -> None:
+    """Grava o extrato no formato OFX 1.x (tags sem fechamento), o mesmo que `ler_ofx` entende."""
+    linhas = ["OFXHEADER:100", "DATA:OFXSGML", "VERSION:102", "", "<OFX><BANKMSGSRSV1><STMTTRNRS><STMTRS><BANKTRANLIST>"]
+    for t in extrato:
+        dia = str(t["data"]).replace("-", "")
+        tipo = "CREDIT" if t["valor"] >= 0 else "DEBIT"
+        linhas += [
+            "<STMTTRN>",
+            f"<TRNTYPE>{tipo}",
+            f"<DTPOSTED>{dia}",
+            f"<TRNAMT>{t['valor']:.2f}",
+            f"<FITID>{t['id']}",
+            f"<MEMO>{t['descricao']}",
+            "</STMTTRN>",
+        ]
+    linhas.append("</BANKTRANLIST></STMTRS></STMTTRNRS></BANKMSGSRSV1></OFX>")
+    caminho.parent.mkdir(parents=True, exist_ok=True)
+    caminho.write_text(chr(10).join(linhas) + chr(10), encoding="utf-8")

@@ -85,3 +85,14 @@ def test_html_escapa_texto_dos_dados():
 def test_medir_imprime(capsys):
     assert main(["medir"]) == 0
     assert "precisão" in capsys.readouterr().out
+
+
+def test_demo_em_ofx_gera_o_mesmo_resultado_do_csv(tmp_path):
+    csv_, ofx_ = tmp_path / "csv", tmp_path / "ofx"
+    main(["demo", "--entrada", str(csv_), "--n", "20"])
+    main(["demo", "--entrada", str(ofx_), "--n", "20", "--formato", "ofx"])
+    assert (ofx_ / "outubro.extrato.ofx").exists()
+    assert not (ofx_ / "outubro.extrato.csv").exists()
+    res_csv = robo.rodar_uma_vez(csv_, tmp_path / "s1")
+    res_ofx = robo.rodar_uma_vez(ofx_, tmp_path / "s2")
+    assert res_csv == res_ofx

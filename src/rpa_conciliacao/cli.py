@@ -8,6 +8,7 @@ from pathlib import Path
 
 from .conciliar import conciliar, precisao
 from .gerar import gerar
+from .ofx import escrever_ofx
 from .robo import escrever_csv, rodar_uma_vez
 
 
@@ -22,6 +23,7 @@ def main(argv: list[str] | None = None) -> int:
     d = sub.add_parser("demo", help="gera um lote fictício na pasta de entrada")
     d.add_argument("--entrada", default="entrada")
     d.add_argument("--n", type=int, default=60)
+    d.add_argument("--formato", choices=("csv", "ofx"), default="csv", help="formato do extrato gerado")
     r = sub.add_parser("robo", help="processa os pares da pasta de entrada")
     r.add_argument("--entrada", default="entrada")
     r.add_argument("--saida", default="saida")
@@ -32,7 +34,10 @@ def main(argv: list[str] | None = None) -> int:
         pedidos, extrato, _ = gerar(a.n)
         pasta = Path(a.entrada)
         escrever_csv(pasta / "outubro.pedidos.csv", pedidos, ("id", "cliente", "valor", "data"))
-        escrever_csv(pasta / "outubro.extrato.csv", extrato, ("id", "data", "descricao", "valor"))
+        if a.formato == "ofx":
+            escrever_ofx(pasta / "outubro.extrato.ofx", extrato)
+        else:
+            escrever_csv(pasta / "outubro.extrato.csv", extrato, ("id", "data", "descricao", "valor"))
         print(f"Lote fictício gravado em {pasta}/ ({len(pedidos)} pedidos, {len(extrato)} lançamentos).")
     elif a.cmd == "robo":
         res = rodar_uma_vez(Path(a.entrada), Path(a.saida))
