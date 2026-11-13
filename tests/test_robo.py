@@ -120,3 +120,14 @@ def test_cli_vigiar_com_ciclos(tmp_path, capsys):
     main(["demo", "--entrada", str(ent), "--n", "5"])
     assert main(["robo", "--entrada", str(ent), "--saida", str(tmp_path / "s"), "--vigiar", "0.01", "--ciclos", "2"]) == 0
     assert "1 lote(s)" in capsys.readouterr().out
+
+
+def test_vigiar_termina_limpo_com_ctrl_c(tmp_path):
+    def dormir_e_interromper(_segundos):
+        raise KeyboardInterrupt
+
+    total = robo.vigiar(tmp_path / "ent", tmp_path / "s", dormir=dormir_e_interromper)
+    assert total == 0
+    eventos = log_eventos(tmp_path / "s")
+    assert eventos[-1]["evento"] == "vigia_fim"
+    assert eventos[-1]["ciclos"] == 1
