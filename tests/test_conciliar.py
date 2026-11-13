@@ -82,6 +82,10 @@ def test_gerar_e_reprodutivel():
     assert gerar(20, 3) != gerar(20, 4)
 
 
+def test_descricao_so_com_prefixo_e_codigo_nao_parece_com_ninguem():
+    assert _nome_na_descricao("Ana Souza", "PIX RECEBIDO P0001") == 0.0
+
+
 def test_medir_no_lote_sintetico():
     m = medir()
     assert m["precisao"] >= 0.95
