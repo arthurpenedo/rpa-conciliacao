@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import math
 import re
 from datetime import datetime
 from pathlib import Path
@@ -33,6 +34,8 @@ def ler_ofx(caminho: Path) -> list[dict]:
         try:
             dia = datetime.strptime(data[:8], "%Y%m%d").strftime("%Y-%m-%d")
             numero = float(valor.replace(",", "."))
+            if not math.isfinite(numero):
+                raise ValueError(f"valor não numérico: {valor}")
         except ValueError as e:
             raise ValueError(f"{caminho.name} transação {n}: valor ou data inválidos ({e})") from e
         descricao = _campo(bloco, "MEMO") or _campo(bloco, "NAME") or ""

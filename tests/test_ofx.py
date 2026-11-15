@@ -54,6 +54,14 @@ def test_ofx_invalido_da_erro_claro(tmp_path, texto):
         ler_ofx(f)
 
 
+@pytest.mark.parametrize("valor", ["nan", "inf", "-inf"])
+def test_ofx_recusa_valor_nao_finito(tmp_path, valor):
+    f = tmp_path / "w.ofx"
+    f.write_text(f"<STMTTRN><FITID>1<DTPOSTED>20261001<TRNAMT>{valor}</STMTTRN>", encoding="utf-8")
+    with pytest.raises(ValueError, match="w.ofx"):
+        ler_ofx(f)
+
+
 def test_robo_aceita_extrato_ofx(tmp_path):
     ent, sai = tmp_path / "ent", tmp_path / "sai"
     ent.mkdir()
