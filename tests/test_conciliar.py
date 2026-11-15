@@ -1,5 +1,11 @@
 from rpa_conciliacao.cli import medir
-from rpa_conciliacao.conciliar import _nome_na_descricao, conciliar, normalizar, resumo
+from rpa_conciliacao.conciliar import (
+    _nome_na_descricao,
+    conciliar,
+    normalizar,
+    precisao,
+    resumo,
+)
 from rpa_conciliacao.gerar import gerar
 
 PED = [
@@ -84,6 +90,20 @@ def test_gerar_e_reprodutivel():
 
 def test_descricao_so_com_prefixo_e_codigo_nao_parece_com_ninguem():
     assert _nome_na_descricao("Ana Souza", "PIX RECEBIDO P0001") == 0.0
+
+
+def test_listas_vazias_nao_quebram():
+    assert conciliar([], []) == []
+    assert resumo([], PED)["pedidos_sem_pagamento"] == 3
+
+
+def test_precisao_sem_conciliados_nem_gabarito_e_um():
+    assert precisao([], {}) == {"precisao": 1.0, "cobertura": 1.0, "conciliados": 0}
+
+
+def test_codigo_de_pedido_inexistente_nao_concilia():
+    res = por_id(conciliar(PED, [lan("L1", "PIX FULANO P9999", 45.0)]))
+    assert res["L1"].status == "sem_pedido"
 
 
 def test_medir_no_lote_sintetico():
