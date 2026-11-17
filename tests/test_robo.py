@@ -136,3 +136,17 @@ def test_vigiar_termina_limpo_com_ctrl_c(tmp_path):
 def test_tentativas_menor_que_1_e_recusado(tmp_path):
     with pytest.raises(ValueError, match="pelo menos 1"):
         robo.rodar_uma_vez(tmp_path / "ent", tmp_path / "sai", tentativas=0)
+
+
+def test_pausa_dobra_a_cada_tentativa(tmp_path, monkeypatch):
+    ent, sai = tmp_path / "ent", tmp_path / "sai"
+    main(["demo", "--entrada", str(ent), "--n", "5"])
+
+    def trava(*a, **k):
+        raise PermissionError("aberto no Excel")
+
+    esperas = []
+    monkeypatch.setattr(robo, "processar_par", trava)
+    monkeypatch.setattr(robo.time, "sleep", esperas.append)
+    robo.rodar_uma_vez(ent, sai, tentativas=4, pausa=0.5)
+    assert esperas == [0.5, 1.0, 2.0]  # não dorme depois da última tentativa

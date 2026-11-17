@@ -66,7 +66,7 @@ def processar_par(extrato_csv: Path, pedidos_csv: Path, saida: Path) -> dict:
     return sumario
 
 
-def rodar_uma_vez(entrada: Path, saida: Path, tentativas: int = 2) -> list[dict]:
+def rodar_uma_vez(entrada: Path, saida: Path, tentativas: int = 2, pausa: float = 0.2) -> list[dict]:
     """Procura pares `<nome>.extrato.csv` + `<nome>.pedidos.csv` na entrada.
 
     Sucesso: arquivos vão para `processados/`. Erro de formato: vão para `erros/` com o motivo no log,
@@ -99,7 +99,7 @@ def rodar_uma_vez(entrada: Path, saida: Path, tentativas: int = 2) -> list[dict]
                 if tentativa == tentativas:
                     log(saida, "erro", lote=nome, motivo=f"falhou após {tentativas} tentativas")
                 else:
-                    time.sleep(0.2)
+                    time.sleep(pausa * 2 ** (tentativa - 1))  # backoff: 0,2 s, 0,4 s, 0,8 s...
     return resultados
 
 
