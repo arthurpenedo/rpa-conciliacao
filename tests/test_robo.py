@@ -131,3 +131,8 @@ def test_vigiar_termina_limpo_com_ctrl_c(tmp_path):
     eventos = log_eventos(tmp_path / "s")
     assert eventos[-1]["evento"] == "vigia_fim"
     assert eventos[-1]["ciclos"] == 1
+
+
+def test_tentativas_menor_que_1_e_recusado(tmp_path):
+    with pytest.raises(ValueError, match="pelo menos 1"):
+        robo.rodar_uma_vez(tmp_path / "ent", tmp_path / "sai", tentativas=0)

@@ -72,6 +72,8 @@ def rodar_uma_vez(entrada: Path, saida: Path, tentativas: int = 2) -> list[dict]
     Sucesso: arquivos vão para `processados/`. Erro de formato: vão para `erros/` com o motivo no log,
     e o robô segue com os demais (um arquivo ruim não derruba o lote).
     """
+    if tentativas < 1:
+        raise ValueError("tentativas deve ser pelo menos 1 (com 0 o robô ignoraria todos os arquivos em silêncio)")
     resultados = []
     extratos = [*entrada.glob("*.extrato.csv"), *entrada.glob("*.extrato.ofx")]
     for extrato in sorted(extratos):
