@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import csv
 import json
+import math
 import shutil
 import time
 from datetime import datetime
@@ -27,6 +28,8 @@ def ler_csv(caminho: Path, obrigatorias: tuple[str, ...]) -> list[dict]:
         for n, linha in enumerate(leitor, start=2):
             try:
                 linha["valor"] = float(str(linha["valor"]).replace(",", "."))
+                if not math.isfinite(linha["valor"]):
+                    raise ValueError(f"valor não numérico: {linha['valor']}")
                 datetime.strptime(linha["data"], "%Y-%m-%d")
             except ValueError as e:
                 raise ValueError(f"{caminho.name} linha {n}: valor ou data inválidos ({e})") from e

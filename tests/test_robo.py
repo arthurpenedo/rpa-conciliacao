@@ -49,6 +49,21 @@ def test_valor_com_virgula(tmp_path):
     assert robo.ler_csv(f, ("id", "data", "valor"))[0]["valor"] == 12.5
 
 
+@pytest.mark.parametrize("valor", ["nan", "inf", "-inf"])
+def test_valor_nao_finito_e_rejeitado(tmp_path, valor):
+    f = tmp_path / "a.csv"
+    f.write_text(f"id,data,valor\n1,2026-10-01,{valor}\n", encoding="utf-8")
+    with pytest.raises(ValueError, match="linha 2"):
+        robo.ler_csv(f, ("id", "data", "valor"))
+
+
+def test_csv_vazio_da_erro_de_colunas(tmp_path):
+    f = tmp_path / "a.csv"
+    f.write_text("", encoding="utf-8")
+    with pytest.raises(ValueError, match="faltam colunas"):
+        robo.ler_csv(f, ("id", "data", "valor"))
+
+
 def test_sem_arquivo_de_pedidos_fica_aguardando(tmp_path):
     ent, sai = tmp_path / "ent", tmp_path / "sai"
     ent.mkdir()
