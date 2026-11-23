@@ -31,6 +31,12 @@ def main(argv: list[str] | None = None) -> int:
     r.add_argument("--ciclos", type=int, help="com --vigiar: para depois de N conferências (padrão: até Ctrl+C)")
     sub.add_parser("medir", help="precisão e cobertura no lote sintético com gabarito")
     a = ap.parse_args(argv)
+    if a.cmd == "robo" and a.vigiar is not None and a.vigiar <= 0:
+        print("Erro: --vigiar precisa ser maior que 0 segundos.", file=sys.stderr)
+        return 2
+    if a.cmd == "demo" and a.n < 1:
+        print("Erro: --n precisa ser 1 ou mais.", file=sys.stderr)
+        return 2
 
     if a.cmd == "demo":
         pedidos, extrato, _ = gerar(a.n)
