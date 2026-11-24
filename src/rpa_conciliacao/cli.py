@@ -34,6 +34,9 @@ def main(argv: list[str] | None = None) -> int:
     if a.cmd == "robo" and a.vigiar is not None and a.vigiar <= 0:
         print("Erro: --vigiar precisa ser maior que 0 segundos.", file=sys.stderr)
         return 2
+    if a.cmd == "robo" and a.ciclos is not None and (a.vigiar is None or a.ciclos < 1):
+        print("Erro: --ciclos precisa ser 1 ou mais e só vale junto com --vigiar.", file=sys.stderr)
+        return 2
     if a.cmd == "demo" and a.n < 1:
         print("Erro: --n precisa ser 1 ou mais.", file=sys.stderr)
         return 2
