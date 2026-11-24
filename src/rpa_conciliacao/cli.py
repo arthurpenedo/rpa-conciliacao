@@ -55,6 +55,10 @@ def main(argv: list[str] | None = None) -> int:
             n = vigiar(Path(a.entrada), Path(a.saida), a.vigiar, a.ciclos)
             print(f"Vigia encerrado: {n} lote(s) processado(s).")
             return 0
+        if not Path(a.entrada).is_dir():
+            print(f"Erro: pasta de entrada não encontrada: {a.entrada} (crie com `rpa-conciliacao demo`).",
+                  file=sys.stderr)
+            return 2
         res = rodar_uma_vez(Path(a.entrada), Path(a.saida))
         for x in res:
             print(f"{x['lote']}: {x['conciliado']} conciliados, {x['revisar']} a revisar, {x['sem_pedido']} sem pedido")
