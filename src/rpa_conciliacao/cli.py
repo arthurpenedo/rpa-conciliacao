@@ -67,7 +67,7 @@ def main(argv: list[str] | None = None) -> int:
         for x in res:
             print(f"{x['lote']}: {x['conciliado']} conciliados, {x['revisar']} a revisar, {x['sem_pedido']} sem pedido")
         if not res:
-            print("Nada processado (veja saida/robo.jsonl).")
+            print(f"Nada processado (veja {Path(a.saida) / 'robo.jsonl'}).")
     else:
         m = medir()
         print(f"precisão {m['precisao']:.1%} | cobertura {m['cobertura']:.1%} | conciliados {m['conciliados']}")

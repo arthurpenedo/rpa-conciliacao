@@ -39,3 +39,9 @@ def test_robo_com_saida_que_e_arquivo_devolve_2(capsys, tmp_path):
     arq.write_text("x")
     assert main(["robo", "--entrada", str(tmp_path), "--saida", str(arq)]) == 2
     assert "precisa ser uma pasta" in capsys.readouterr().err
+
+
+def test_robo_sem_lotes_aponta_o_log_na_saida_escolhida(capsys, tmp_path):
+    saida = tmp_path / "minha-saida"
+    assert main(["robo", "--entrada", str(tmp_path), "--saida", str(saida)]) == 0
+    assert str(saida / "robo.jsonl") in capsys.readouterr().out
