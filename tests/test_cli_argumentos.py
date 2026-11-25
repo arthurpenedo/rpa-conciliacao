@@ -41,6 +41,14 @@ def test_robo_com_saida_que_e_arquivo_devolve_2(capsys, tmp_path):
     assert "precisa ser uma pasta" in capsys.readouterr().err
 
 
+def test_demo_e_robo_com_caminho_dentro_de_arquivo_devolvem_2(capsys, tmp_path):
+    arq = tmp_path / "arq.txt"
+    arq.write_text("x")
+    assert main(["demo", "--entrada", str(arq / "e")]) == 2
+    assert main(["robo", "--entrada", str(tmp_path), "--saida", str(arq / "s")]) == 2
+    assert capsys.readouterr().err.count("passa por um arquivo") == 2
+
+
 def test_robo_sem_lotes_aponta_o_log_na_saida_escolhida(capsys, tmp_path):
     saida = tmp_path / "minha-saida"
     assert main(["robo", "--entrada", str(tmp_path), "--saida", str(saida)]) == 0

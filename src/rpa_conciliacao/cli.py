@@ -41,6 +41,10 @@ def main(argv: list[str] | None = None) -> int:
         if valor is not None and Path(valor).is_file():
             print(f"Erro: {opcao} precisa ser uma pasta, mas {valor} é um arquivo.", file=sys.stderr)
             return 2
+        if valor is not None and any(p.is_file() for p in Path(valor).parents):
+            print(f"Erro: {opcao} passa por um arquivo ({valor}); informe um caminho dentro de uma pasta.",
+                  file=sys.stderr)
+            return 2
     if a.cmd == "demo" and a.n < 1:
         print("Erro: --n precisa ser 1 ou mais.", file=sys.stderr)
         return 2
