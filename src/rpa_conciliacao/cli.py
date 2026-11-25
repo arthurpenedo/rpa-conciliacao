@@ -37,6 +37,10 @@ def main(argv: list[str] | None = None) -> int:
     if a.cmd == "robo" and a.ciclos is not None and (a.vigiar is None or a.ciclos < 1):
         print("Erro: --ciclos precisa ser 1 ou mais e só vale junto com --vigiar.", file=sys.stderr)
         return 2
+    for opcao, valor in (("--entrada", getattr(a, "entrada", None)), ("--saida", getattr(a, "saida", None))):
+        if valor is not None and Path(valor).is_file():
+            print(f"Erro: {opcao} precisa ser uma pasta, mas {valor} é um arquivo.", file=sys.stderr)
+            return 2
     if a.cmd == "demo" and a.n < 1:
         print("Erro: --n precisa ser 1 ou mais.", file=sys.stderr)
         return 2

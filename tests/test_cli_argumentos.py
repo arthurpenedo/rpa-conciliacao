@@ -25,3 +25,17 @@ def test_robo_com_pasta_de_entrada_inexistente_devolve_2(tmp_path, capsys):
     assert main(["robo", "--entrada", str(tmp_path / "erro-de-digitacao"), "--saida", str(tmp_path / "s")]) == 2
     assert "pasta de entrada não encontrada" in capsys.readouterr().err
     assert not (tmp_path / "s").exists()
+
+
+def test_demo_com_entrada_que_e_arquivo_devolve_2(capsys, tmp_path):
+    arq = tmp_path / "arq.txt"
+    arq.write_text("x")
+    assert main(["demo", "--entrada", str(arq)]) == 2
+    assert "precisa ser uma pasta" in capsys.readouterr().err
+
+
+def test_robo_com_saida_que_e_arquivo_devolve_2(capsys, tmp_path):
+    arq = tmp_path / "arq.txt"
+    arq.write_text("x")
+    assert main(["robo", "--entrada", str(tmp_path), "--saida", str(arq)]) == 2
+    assert "precisa ser uma pasta" in capsys.readouterr().err
